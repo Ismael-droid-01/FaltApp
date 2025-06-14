@@ -3,6 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+import '../models/falta.dart';
+import '../providers/falta_provider.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -10,7 +14,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   bool _isPressed = false;
   Timer? _timer;
@@ -31,10 +36,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   void _registrarFalta() {
+    final falta = Falta(
+      materia: 'Matematicas',
+      fecha: DateTime.now(),
+    );
+
+    context.read<FaltaProvider>().agregarFalta(falta);
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Falta registrada')),
     );
-    _controller.reset(); // Reinicia animacion
+
+    _controller.reset(); // Reinicia la animacion
     _isPressed = false;
   }
 
@@ -60,45 +73,52 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('FaltaApp'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('FaltaApp'), centerTitle: true),
       body: Center(
-        child: GestureDetector(
-          onLongPressStart: (_) => _onLongPressStart(),
-          onLongPressEnd: (_) => _onLongPressEnd(),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                width: 140,
-                height: 140,
-                child: CustomPaint(
-                  painter: ProgressCirclePainter(_controller),
-                ),
-              ),
-              Container(
-                width: 120,
-                height: 120,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.redAccent,
-                ),
-                child: const Center(
-                  child: Text(
-                    'Registrar\nFalta',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Matematicas',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            GestureDetector(
+              onLongPressStart: (_) => _onLongPressStart(),
+              onLongPressEnd: (_) => _onLongPressEnd(),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    width: 140,
+                    height: 140,
+                    child: CustomPaint(
+                      painter: ProgressCirclePainter(_controller),
                     ),
                   ),
-                ),
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.redAccent,
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Registrar\nFalta',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -112,7 +132,11 @@ class ProgressCirclePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()..color = Colors.redAccent..strokeWidth = 6..style = PaintingStyle.stroke;
+    final Paint paint =
+        Paint()
+          ..color = Colors.redAccent
+          ..strokeWidth = 6
+          ..style = PaintingStyle.stroke;
 
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
@@ -129,5 +153,6 @@ class ProgressCirclePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant ProgressCirclePainter oldDelegate) => oldDelegate.animation != animation;
+  bool shouldRepaint(covariant ProgressCirclePainter oldDelegate) =>
+      oldDelegate.animation != animation;
 }
