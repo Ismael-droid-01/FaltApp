@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen>
     // Se carga la lista de faltas al iniciar la pantalla
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<FaltaProvider>().cargarFaltas();
-    }); 
+    });
 
     // Si la animacion termina y el boton sigue presionado, se registra la falta
     _controller.addStatusListener((status) {
@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _registrarFalta() {
-    final falta = Falta(materia: 'Matematicas', fecha: DateTime(2024, 10, 5));
+    final falta = Falta(materia: 'Programacion', fecha: DateTime(2024, 10, 5));
 
     context.read<FaltaProvider>().agregarFalta(falta);
 
@@ -83,43 +83,61 @@ class _HomeScreenState extends State<HomeScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Consumer<FaltaProvider>(
+              builder: (context, faltaProvider, _) {
+                final faltas = faltaProvider.faltas;
+
+                if (faltas.isEmpty) {
+                  return const Text('No hay faltas registradas');
+                }
+
+                // Agrupar por materia
+                final faltasPorMateria = <String, List<Falta>>{};
+                for (var falta in faltas) {
+                  faltasPorMateria.putIfAbsent(falta.materia, () => []).add(falta);
+                }
+
+                // Crear una card por materia
+                return Column(
+                  children: faltasPorMateria.entries.map((entry) {
+                    final materia = entry.key;
+                    final listaFaltas = entry.value;
+
+                    return Card(
+                      elevation: 4,
+                      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment. start,
+                          children: [
+                            Text(
+                              materia,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            ...listaFaltas.map((f) => Text(
+                              '-${f.fecha.toLocal().toString().split(" ")[0]}'
+                            )),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+
+            const SizedBox(height: 20),
             const Text(
               'Matematicas',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
 
-            Consumer<FaltaProvider>(
-              builder: (context, faltaProvider, _) {
-                final faltas = faltaProvider.faltas;
-                if (faltas.isEmpty) {
-                  return const Text('No hay faltas registradas');
-                }
-                return Card(
-                  elevation: 4,
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Faltas',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 6),
-                        Text('Materia ${faltas.last.materia}'),
-                        Text(
-                          'Fecha ${faltas.last.fecha.toLocal().toString().split(" ")[0]}',
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
             GestureDetector(
               onLongPressStart: (_) => _onLongPressStart(),
               onLongPressEnd: (_) => _onLongPressEnd(),
