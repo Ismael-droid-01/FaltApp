@@ -16,10 +16,7 @@ class FaltaAdapter extends TypeAdapter<Falta> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Falta(
-      materia: fields[0] as String,
-      fecha: fields[1] as DateTime,
-    );
+    return Falta(materia: fields[0] as String, fecha: fields[1] as DateTime);
   }
 
   @override

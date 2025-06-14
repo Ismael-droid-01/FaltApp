@@ -15,7 +15,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => FaltaProvider()..cargarFaltas())
+        ChangeNotifierProvider(create: (_) => FaltaProvider()..cargarFaltas()),
       ],
       child: const FaltApp(),
     ),

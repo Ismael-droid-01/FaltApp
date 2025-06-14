@@ -23,11 +23,19 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+
+    // Se carga el controller de la animacion
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     );
 
+    // Se carga la lista de faltas al iniciar la pantalla
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<FaltaProvider>().cargarFaltas();
+    }); 
+
+    // Si la animacion termina y el boton sigue presionado, se registra la falta
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed && _isPressed) {
         _registrarFalta();
@@ -36,16 +44,13 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _registrarFalta() {
-    final falta = Falta(
-      materia: 'Matematicas',
-      fecha: DateTime.now(),
-    );
+    final falta = Falta(materia: 'Matematicas', fecha: DateTime(2024, 10, 5));
 
     context.read<FaltaProvider>().agregarFalta(falta);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Falta registrada')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Falta registrada')));
 
     _controller.reset(); // Reinicia la animacion
     _isPressed = false;
@@ -83,6 +88,38 @@ class _HomeScreenState extends State<HomeScreen>
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
+
+            Consumer<FaltaProvider>(
+              builder: (context, faltaProvider, _) {
+                final faltas = faltaProvider.faltas;
+                if (faltas.isEmpty) {
+                  return const Text('No hay faltas registradas');
+                }
+                return Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Faltas',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 6),
+                        Text('Materia ${faltas.last.materia}'),
+                        Text(
+                          'Fecha ${faltas.last.fecha.toLocal().toString().split(" ")[0]}',
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
             GestureDetector(
               onLongPressStart: (_) => _onLongPressStart(),
               onLongPressEnd: (_) => _onLongPressEnd(),
