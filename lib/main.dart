@@ -30,10 +30,7 @@ class FaltApp extends StatelessWidget {
     return MaterialApp(
       title: 'FaltApp',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: Colors.redAccent,
-        useMaterial3: true,
-      ),
+      theme: ThemeData(colorSchemeSeed: Colors.redAccent, useMaterial3: true),
       home: const MainScreen(),
     );
   }
