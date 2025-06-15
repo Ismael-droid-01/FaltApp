@@ -31,6 +31,13 @@ class SettingsScreen extends StatelessWidget {
               ),
               Divider(height: 1),
               ListTile(
+                leading: Icon(Icons.remove_circle_outline),
+                title: Text('Eliminar solo faltas'),
+                subtitle: Text('Selecciona materias y borra sus faltas'),
+                onTap: () => _mostrarSeleccionMaterias(context),
+              ),
+              Divider(height: 1),
+              ListTile(
                 leading: Icon(Icons.delete_forever),
                 title: Text('Restablecer datos'),
                 subtitle: Text(
@@ -65,6 +72,88 @@ class SettingsScreen extends StatelessWidget {
             'Horario cargado correctamente, ${clases.length} clases añadidas',
       );
     }
+  }
+
+  void _mostrarSeleccionMaterias(BuildContext context) {
+    final seleccionadas = <String>{};
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Consumer<ClaseProvider>(
+          builder: (context, claseProvider, _) {
+            final clases = claseProvider.clases;
+
+            if (clases.isEmpty) {
+              return AlertDialog(
+                title: const Text('Sin Clases'),
+                content: const Text('No hay clases registradas.'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cerrar'),
+                  ),
+                ],
+              );
+            }
+
+            return StatefulBuilder(
+              builder: (context, setState) {
+                return AlertDialog(
+                  title: const Text('Selecciona materias'),
+                  content: SizedBox(
+                    width: double.maxFinite,
+                    child: ListView(
+                      shrinkWrap: true,
+                      children:
+                          clases.map((clase) {
+                            return CheckboxListTile(
+                              title: Text(clase.materia),
+                              value: seleccionadas.contains(clase.materia),
+                              onChanged: (bool? seleccionado) {
+                                setState(() {
+                                  if (seleccionado == true) {
+                                    seleccionadas.add(clase.materia);
+                                  } else {
+                                    seleccionadas.remove(clase.materia);
+                                  }
+                                });
+                              },
+                            );
+                          }).toList(),
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () async {
+                        for (final materia in seleccionadas) {
+                          await ClaseStorageService.eliminarFaltasDeClase(
+                            materia,
+                          );
+                        }
+
+                        if (!context.mounted) return;
+                        context.read<ClaseProvider>().cargarClases();
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/',
+                          (route) => false,
+                          arguments:
+                              'Faltas eliminadas de ${seleccionadas.length} materia(s)',
+                        );
+                      },
+                      child: const Text(
+                        'Aceptar',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        );
+      },
+    );
   }
 
   void _confirmarReset(BuildContext context) {

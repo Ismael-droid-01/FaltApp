@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen>
   bool _isPressed = false;
   Timer? _timer;
 
-  final String _materiaTexto = 'Compiladores';
+  final String _materiaTexto = 'Arquitectura y organización de computadoras';
 
   @override
   void initState() {

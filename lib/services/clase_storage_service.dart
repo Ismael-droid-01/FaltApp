@@ -49,4 +49,14 @@ class ClaseStorageService {
     // Guardar los cambios
     await clase.save();
   }
+
+  static Future<void> eliminarFaltasDeClase(String materia) async {
+    final clase = _box.values.firstWhere(
+      (c) => c.materia == materia,
+      orElse: () => throw Exception('Clase no encontrada: $materia'),
+    );
+
+    clase.faltas.clear();
+    await clase.save();
+  }
 }
