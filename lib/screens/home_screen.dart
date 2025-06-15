@@ -45,6 +45,101 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
+  void _mostrarFormularioAgregarFalta() {
+    final claseProvider = context.read<ClaseProvider>();
+    final clases = claseProvider.clases;
+
+    String? materiaSeleccionada;
+    DateTime? fechaSeleccionada;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Agregar Falta'),
+          content: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.5,
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(labelText: 'Materia'),
+                    items:
+                        clases
+                            .map(
+                              (clase) => DropdownMenuItem(
+                                value: clase.materia,
+                                child: Text(clase.materia),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (value) {
+                      materiaSeleccionada = value;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.calendar_today),
+                    label: Text(
+                      fechaSeleccionada != null
+                          ? '${fechaSeleccionada!.toLocal()}'.split(' ')[0]
+                          : 'Seleccionar fecha',
+                    ),
+                    onPressed: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null) {
+                        setState(() {
+                          fechaSeleccionada = picked;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            ElevatedButton(
+              child: const Text('Guardar'),
+              onPressed: () async {
+                if (materiaSeleccionada == null || fechaSeleccionada == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Completa todos los campos')),
+                  );
+                  return;
+                }
+
+                await ClaseStorageService.agregarFaltaAClase(
+                  materiaSeleccionada!,
+                  fechaSeleccionada!,
+                );
+                claseProvider.cargarClases();
+                if (!context.mounted) return;
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Falta agregada manualmente')),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _registrarFalta() async {
     try {
       final clases = context.read<ClaseProvider>().clases;
@@ -101,7 +196,18 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Faltas'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('Faltas'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: 'Agregar falta manualmente',
+            onPressed: _mostrarFormularioAgregarFalta,
+          ),
+        ],
+      ),
+
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -176,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen>
             ),
 
             const SizedBox(height: 20),
-            
+
             Consumer<ClaseProvider>(
               builder: (context, claseProvider, _) {
                 final materiaActual = ClaseUtils.obtenerMateriaActual(
