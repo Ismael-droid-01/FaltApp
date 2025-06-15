@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import '../services/storage_service.dart';
+import '../services/falta_storage_service.dart';
 import '../providers/falta_provider.dart';
 import 'package:provider/provider.dart';
 import '../services/pdf_service.dart';
+import '../models/clase.dart';
+import '../services/clase_storage_service.dart';
+import '../providers/clase_provider.dart';
 import 'dart:io';
-import '../screens/pdf_viewer_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -27,17 +29,7 @@ class SettingsScreen extends StatelessWidget {
                 leading: Icon(Icons.upload_file),
                 title: Text('Cargar archivo de horario'),
                 subtitle: Text('Sube un archivo PDF con tu horario de clases'),
-                onTap: () async {
-                  final File? pdf = await PDFService.pickPDF();
-                  if (pdf != null && context.mounted) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PDFViewerScreen(file: pdf),
-                      ),
-                    );
-                  }
-                },
+                onTap: () => _procesarPDF(context),
               ),
               Divider(height: 1),
               ListTile(
@@ -57,6 +49,30 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  void _procesarPDF(BuildContext context) async {
+    final File? pdf = await PDFService.pickPDF();
+    if (pdf != null && context.mounted) {
+      final String texto = await PDFService.extractTextFromPDF(pdf);
+      final List<Clase> clases = PDFService.extractClasesFromText(texto);
+      for (var clase in clases) {
+        print("-------------------------");
+        print(clase.materia);
+        print(clase.horario);
+        print("-------------------------");
+      }
+      await ClaseStorageService.agregarMultiplesClases(clases);
+      context.read<ClaseProvider>().cargarClases();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Horario cargado correctamente, ${clases.length} clases añadidas',
+          ),
+        ),
+      );
+    }
+  }
+
   void _confirmarReset(BuildContext context) {
     showDialog(
       context: context,
@@ -73,7 +89,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () async {
-                  await StorageService.limpiarFaltas();
+                  await FaltaStorageService.limpiarFaltas();
 
                   if (context.mounted) {
                     context

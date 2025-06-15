@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/falta.dart';
-import '../services/storage_service.dart';
+import '../services/falta_storage_service.dart';
 
 class FaltaProvider with ChangeNotifier {
   List<Falta> _faltas = [];
@@ -8,17 +8,17 @@ class FaltaProvider with ChangeNotifier {
   List<Falta> get faltas => _faltas;
 
   void cargarFaltas() {
-    _faltas = StorageService.obtenerFaltas();
+    _faltas = FaltaStorageService.obtenerFaltas();
     notifyListeners();
   }
 
   Future<void> agregarFalta(Falta falta) async {
-    await StorageService.agregarFalta(falta);
+    await FaltaStorageService.agregarFalta(falta);
     cargarFaltas();
   }
 
   Future<void> eliminarFalta(int index) async {
-    await StorageService.eliminarFalta(index);
+    await FaltaStorageService.eliminarFalta(index);
     cargarFaltas();
   }
 }

@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import '../models/falta.dart';
 
-class StorageService {
+class FaltaStorageService {
   static final _box = Hive.box<Falta>('faltas');
 
   static Future<void> agregarFalta(Falta falta) async {

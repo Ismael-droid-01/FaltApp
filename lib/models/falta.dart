@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'falta.g.dart';
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 1)
 class Falta extends HiveObject {
   @HiveField(0)
   final String materia;

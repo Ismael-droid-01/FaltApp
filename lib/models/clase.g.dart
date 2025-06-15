@@ -1,32 +1,32 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'falta.dart';
+part of 'clase.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class FaltaAdapter extends TypeAdapter<Falta> {
+class ClaseAdapter extends TypeAdapter<Clase> {
   @override
-  final int typeId = 1;
+  final int typeId = 0;
 
   @override
-  Falta read(BinaryReader reader) {
+  Clase read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Falta(materia: fields[0] as String, fecha: fields[1] as DateTime);
+    return Clase(materia: fields[0] as String, horario: fields[1] as String);
   }
 
   @override
-  void write(BinaryWriter writer, Falta obj) {
+  void write(BinaryWriter writer, Clase obj) {
     writer
       ..writeByte(2)
       ..writeByte(0)
       ..write(obj.materia)
       ..writeByte(1)
-      ..write(obj.fecha);
+      ..write(obj.horario);
   }
 
   @override
@@ -35,7 +35,7 @@ class FaltaAdapter extends TypeAdapter<Falta> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FaltaAdapter &&
+      other is ClaseAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
