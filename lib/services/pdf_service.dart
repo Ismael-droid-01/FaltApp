@@ -67,7 +67,7 @@ class PDFService {
         }
 
         if (horario.isNotEmpty) {
-          clases.add(Clase(materia: linea, horario: horario));
+          clases.add(Clase(materia: linea, horario: horario, faltas: []));
         }
       }
     }

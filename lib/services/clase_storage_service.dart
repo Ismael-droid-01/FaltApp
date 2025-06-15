@@ -25,4 +25,18 @@ class ClaseStorageService {
       await _box.add(clase);
     }
   }
+
+  static Future<void> agregarFaltaAClase(String materia, DateTime fecha) async {
+    // Buscar la clase con la materia dada
+    final clase = _box.values.firstWhere(
+      (c) => c.materia == materia,
+      orElse: () => throw Exception('Clase no encontrada: $materia'),
+    );
+
+    // Agregar la nueva falta
+    clase.faltas.add(fecha);
+
+    // Guardar los cambios
+    await clase.save();
+  }
 }

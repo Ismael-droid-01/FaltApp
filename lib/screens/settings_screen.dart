@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../services/falta_storage_service.dart';
-import '../providers/falta_provider.dart';
 import 'package:provider/provider.dart';
 import '../services/pdf_service.dart';
 import '../models/clase.dart';
@@ -85,18 +83,16 @@ class SettingsScreen extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () async {
-                  // Eliminar faltas
-                  await FaltaStorageService.limpiarFaltas();
+                  // Eliminar clases y faltas
                   await ClaseStorageService.limpiarClases();
 
                   if (!context.mounted) return;
-                  context.read<FaltaProvider>().cargarFaltas();
                   context.read<ClaseProvider>().cargarClases();
 
                   if (context.mounted) {
                     context
-                        .read<FaltaProvider>()
-                        .cargarFaltas(); // Recarga faltas
+                        .read<ClaseProvider>()
+                        .cargarClases(); // Recarga faltas
                     Navigator.pop(context); // Cierra el dialogo
 
                     // Redire la pantalla home

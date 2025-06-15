@@ -16,17 +16,23 @@ class ClaseAdapter extends TypeAdapter<Clase> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Clase(materia: fields[0] as String, horario: fields[1] as String);
+    return Clase(
+      materia: fields[0] as String,
+      horario: fields[1] as String,
+      faltas: (fields[2] as List).cast<DateTime>(),
+    );
   }
 
   @override
   void write(BinaryWriter writer, Clase obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.materia)
       ..writeByte(1)
-      ..write(obj.horario);
+      ..write(obj.horario)
+      ..writeByte(2)
+      ..write(obj.faltas);
   }
 
   @override

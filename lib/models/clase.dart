@@ -10,5 +10,8 @@ class Clase extends HiveObject {
   @HiveField(1)
   String horario;
 
-  Clase({required this.materia, required this.horario});
+  @HiveField(2)
+  List<DateTime> faltas;
+
+  Clase({required this.materia, required this.horario, required this.faltas});
 }
