@@ -4,7 +4,7 @@ import '../models/clase.dart';
 class ClaseUtils {
   static String obtenerMateriaActual(List<Clase> clases) {
     //final ahora = TimeOfDay.now();
-    final ahora = TimeOfDay(hour: 10, minute: 05);
+    final ahora = TimeOfDay(hour: 08, minute: 05);
     //final diaSemana = DateTime.now().weekday;
     final diaSemana = 1;
 

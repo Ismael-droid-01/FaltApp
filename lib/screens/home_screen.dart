@@ -176,41 +176,54 @@ class _HomeScreenState extends State<HomeScreen>
             ),
 
             const SizedBox(height: 20),
+            
+            Consumer<ClaseProvider>(
+              builder: (context, claseProvider, _) {
+                final materiaActual = ClaseUtils.obtenerMateriaActual(
+                  claseProvider.clases,
+                );
+                final hayClase = materiaActual.isNotEmpty;
 
-            GestureDetector(
-              onLongPressStart: (_) => _onLongPressStart(),
-              onLongPressEnd: (_) => _onLongPressEnd(),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    width: 140,
-                    height: 140,
-                    child: CustomPaint(
-                      painter: ProgressCirclePainter(_controller),
-                    ),
-                  ),
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.redAccent,
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'Registrar\nFalta',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                return GestureDetector(
+                  onLongPressStart:
+                      hayClase ? (_) => _onLongPressStart() : null,
+                  onLongPressEnd: hayClase ? (_) => _onLongPressEnd() : null,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 140,
+                        height: 140,
+                        child: CustomPaint(
+                          painter: ProgressCirclePainter(_controller),
                         ),
                       ),
-                    ),
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color:
+                              hayClase
+                                  ? Colors.redAccent
+                                  : Colors.grey, // cambia color
+                        ),
+                        child: Center(
+                          child: Text(
+                            hayClase ? 'Registrar\nFalta' : 'Fuera\nde horario',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ],
         ),
