@@ -57,12 +57,11 @@ class SettingsScreen extends StatelessWidget {
       if (!context.mounted) return;
       context.read<ClaseProvider>().cargarClases();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Horario cargado correctamente, ${clases.length} clases añadidas',
-          ),
-        ),
+      // Redire la pantalla home
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/',
+        (route) => false,
+        arguments: 'Horario cargado correctamente, ${clases.length} clases añadidas',
       );
     }
   }

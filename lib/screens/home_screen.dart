@@ -45,7 +45,10 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _registrarFalta() async {
     try {
-      await ClaseStorageService.agregarFaltaAClase('Compiladores', DateTime.now());
+      await ClaseStorageService.agregarFaltaAClase(
+        'Compiladores',
+        DateTime.now(),
+      );
 
       if (!mounted) return;
       context.read<ClaseProvider>().cargarClases();
