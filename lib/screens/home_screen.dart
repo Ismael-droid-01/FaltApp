@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../providers/clase_provider.dart';
 import '../services/clase_storage_service.dart';
 
+import '../utils/clase_utils.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -19,8 +21,6 @@ class _HomeScreenState extends State<HomeScreen>
   late AnimationController _controller;
   bool _isPressed = false;
   Timer? _timer;
-
-  final String _materiaTexto = 'Arquitectura y organización de computadoras';
 
   @override
   void initState() {
@@ -47,8 +47,18 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _registrarFalta() async {
     try {
+      final clases = context.read<ClaseProvider>().clases;
+      final materiaActual = ClaseUtils.obtenerMateriaActual(clases);
+
+      if (materiaActual.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No hay clase para registrar falta')),
+        );
+        return;
+      }
+
       await ClaseStorageService.agregarFaltaAClase(
-        _materiaTexto,
+        materiaActual,
         DateTime.now(),
       );
 
@@ -148,10 +158,23 @@ class _HomeScreenState extends State<HomeScreen>
             ),
 
             const SizedBox(height: 20),
-            Text(
-              _materiaTexto,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Consumer<ClaseProvider>(
+              builder: (context, claseProvider, _) {
+                final materiaActual = ClaseUtils.obtenerMateriaActual(
+                  claseProvider.clases,
+                );
+                return Text(
+                  materiaActual.isNotEmpty
+                      ? materiaActual
+                      : 'No hay clase en este momento',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              },
             ),
+
             const SizedBox(height: 20),
 
             GestureDetector(

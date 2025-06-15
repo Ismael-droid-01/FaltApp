@@ -10,7 +10,7 @@ import 'screens/settings_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  await Hive.deleteBoxFromDisk('clases');
+  //await Hive.deleteBoxFromDisk('clases');
 
   Hive.registerAdapter(ClaseAdapter());
 

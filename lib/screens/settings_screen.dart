@@ -82,12 +82,15 @@ class SettingsScreen extends StatelessWidget {
       builder: (context) {
         return Consumer<ClaseProvider>(
           builder: (context, claseProvider, _) {
-            final clases = claseProvider.clases;
+            final clases =
+                claseProvider.clases.where((c) => c.faltas.isNotEmpty).toList();
 
             if (clases.isEmpty) {
               return AlertDialog(
                 title: const Text('Sin Clases'),
-                content: const Text('No hay clases registradas.'),
+                content: const Text(
+                  'No hay clases registradas o ninguna contiene al menos una falta.',
+                ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
@@ -124,6 +127,11 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   ),
                   actions: [
+                    TextButton(
+                      onPressed:
+                          () => Navigator.pop(context), // Cierra el diálogo
+                      child: const Text('Cancelar'),
+                    ),
                     TextButton(
                       onPressed: () async {
                         for (final materia in seleccionadas) {
