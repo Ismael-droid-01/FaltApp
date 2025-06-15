@@ -20,6 +20,8 @@ class _HomeScreenState extends State<HomeScreen>
   bool _isPressed = false;
   Timer? _timer;
 
+  final String _materiaTexto = 'Compiladores';
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen>
   void _registrarFalta() async {
     try {
       await ClaseStorageService.agregarFaltaAClase(
-        'Compiladores',
+        _materiaTexto,
         DateTime.now(),
       );
 
@@ -146,8 +148,8 @@ class _HomeScreenState extends State<HomeScreen>
             ),
 
             const SizedBox(height: 20),
-            const Text(
-              'Compiladores',
+            Text(
+              _materiaTexto,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
