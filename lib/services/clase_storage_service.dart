@@ -33,6 +33,16 @@ class ClaseStorageService {
       orElse: () => throw Exception('Clase no encontrada: $materia'),
     );
 
+    // Verificar si ya existe una falta en esa misma fecha (ignorando la hora)
+    final yaExiste = clase.faltas.any(
+      (f) =>
+          f.year == fecha.year && f.month == fecha.month && f.day == fecha.day,
+    );
+
+    if (yaExiste) {
+      throw Exception('La falta para $materia ya fue registrada en esa fecha.');
+    }
+
     // Agregar la nueva falta
     clase.faltas.add(fecha);
 

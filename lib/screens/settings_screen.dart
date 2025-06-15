@@ -61,7 +61,8 @@ class SettingsScreen extends StatelessWidget {
       Navigator.of(context).pushNamedAndRemoveUntil(
         '/',
         (route) => false,
-        arguments: 'Horario cargado correctamente, ${clases.length} clases añadidas',
+        arguments:
+            'Horario cargado correctamente, ${clases.length} clases añadidas',
       );
     }
   }
