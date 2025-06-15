@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _registrarFalta() {
-    final falta = Falta(materia: 'Programacion', fecha: DateTime(2024, 10, 5));
+    final falta = Falta(materia: 'Sistemas', fecha: DateTime(2024, 10, 5));
 
     context.read<FaltaProvider>().agregarFalta(falta);
 
@@ -94,39 +94,53 @@ class _HomeScreenState extends State<HomeScreen>
                 // Agrupar por materia
                 final faltasPorMateria = <String, List<Falta>>{};
                 for (var falta in faltas) {
-                  faltasPorMateria.putIfAbsent(falta.materia, () => []).add(falta);
+                  faltasPorMateria
+                      .putIfAbsent(falta.materia, () => [])
+                      .add(falta);
                 }
 
                 // Crear una card por materia
-                return Column(
-                  children: faltasPorMateria.entries.map((entry) {
-                    final materia = entry.key;
-                    final listaFaltas = entry.value;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 3 / 2,
+                    children:
+                        faltasPorMateria.entries.map((entry) {
+                          final materia = entry.key;
+                          final listaFaltas = entry.value;
 
-                    return Card(
-                      elevation: 4,
-                      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment. start,
-                          children: [
-                            Text(
-                              materia,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                          return Card(
+                            elevation: 4,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    materia,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  ...listaFaltas.map(
+                                    (f) => Text(
+                                      '-${f.fecha.toLocal().toString().split(" ")[0]}',
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            ...listaFaltas.map((f) => Text(
-                              '-${f.fecha.toLocal().toString().split(" ")[0]}'
-                            )),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                          );
+                        }).toList(),
+                  ),
                 );
               },
             ),
