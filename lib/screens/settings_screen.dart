@@ -30,10 +30,12 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.delete_forever),
                 title: Text('Restablecer datos'),
-                subtitle: Text('Elimina todas las materias y faltas registradas'),
+                subtitle: Text(
+                  'Elimina todas las materias y faltas registradas',
+                ),
                 onTap: () {
                   _confirmarReset(context);
-                }
+                },
               ),
             ],
           ),
@@ -45,30 +47,42 @@ class SettingsScreen extends StatelessWidget {
   void _confirmarReset(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmar'),
-        content: const Text('¿Estás seguro de que quieres eliminar todos los datos? Esta acción no se puede deshacer.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () async {
-              await StorageService.limpiarFaltas();
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Confirmar'),
+            content: const Text(
+              '¿Estás seguro de que quieres eliminar todos los datos? Esta acción no se puede deshacer.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await StorageService.limpiarFaltas();
 
-              if (context.mounted) {
-                context.read<FaltaProvider>().cargarFaltas(); // Recarga faltas
-                Navigator.pop(context); // Cierra el dialogo
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Datos restablecidos')),
-                );
-              }
-            },
-            child: const Text('Aceptar', style: TextStyle(color: Colors.red)),
+                  if (context.mounted) {
+                    context
+                        .read<FaltaProvider>()
+                        .cargarFaltas(); // Recarga faltas
+                    Navigator.pop(context); // Cierra el dialogo
+                    
+                    // Redire la pantalla home
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/',
+                      (route) => false,
+                      arguments: 'Datos restablecidos',
+                    );
+                  }
+                },
+                child: const Text(
+                  'Aceptar',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

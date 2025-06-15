@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'models/falta.dart';
 import 'providers/falta_provider.dart';
 import 'screens/main_screen.dart';
+import 'screens/settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +32,11 @@ class FaltApp extends StatelessWidget {
       title: 'FaltApp',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorSchemeSeed: Colors.redAccent, useMaterial3: true),
-      home: const MainScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const MainScreen(),
+        '/settings': (context) => const SettingsScreen(),
+      },
     );
   }
 }

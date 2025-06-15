@@ -14,10 +14,28 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [const HomeScreen(), const SettingsScreen()];
 
+  final bool _snackbarShown = false;
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_snackbarShown) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is String && args.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(args)),
+          );
+        });
+      }
+    }
   }
 
   @override
