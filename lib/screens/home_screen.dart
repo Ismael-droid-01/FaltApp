@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import '../providers/clase_provider.dart';
 import '../services/clase_storage_service.dart';
 import '../utils/clase_utils.dart';
+import 'package:intl/intl.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -258,12 +260,28 @@ class _HomeScreenState extends State<HomeScreen>
                                     ),
                                   ),
                                   const SizedBox(height: 6),
-                                  ...clase.faltas.map(
-                                    (fecha) => Text(
-                                      '-${fecha.toLocal().toString().split(" ")[0]}',
-                                      style: const TextStyle(fontSize: 12),
+                                  if (clase.faltas.isNotEmpty) ...[
+                                    Text(
+                                      DateFormat(
+                                        "d 'de' MMMM",
+                                        'es',
+                                      ).format(clase.faltas.last),
+                                      style: const TextStyle(fontSize: 14),
                                     ),
-                                  ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${clase.faltas.length} falta${clase.faltas.length == 1 ? '' : 's'}',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ] else ...[
+                                    const Text(
+                                      'Sin faltas',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
