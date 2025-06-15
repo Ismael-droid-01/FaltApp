@@ -38,6 +38,8 @@ dependencies:
   hive_flutter: ^1.1.0
   path_provider: ^2.1.2
   provider: ^6.1.2
+  file_picker: ^10.2.0
+  flutter_pdfview: ^1.0.7
 
 dev_dependencies:
   flutter_test:
@@ -51,7 +53,6 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   hive_generator: ^2.0.1
   build_runner: ^2.4.7
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
