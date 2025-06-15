@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('FaltaApp'), centerTitle: true),
+      appBar: AppBar(title: const Text('Faltas'), centerTitle: true),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
