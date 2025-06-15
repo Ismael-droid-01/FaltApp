@@ -59,4 +59,14 @@ class ClaseStorageService {
     clase.faltas.clear();
     await clase.save();
   }
+
+  static Future<void> establecerLimiteFaltas(int limite) async {
+    final box = await Hive.openBox('ajustes');
+    await box.put('limiteFaltas', limite);
+  }
+
+  static Future<int> obtenerLimiteFaltas() async {
+    final box = await Hive.openBox('ajustes');
+    return box.get('limiteFaltas', defaultValue: 1);
+  }
 }

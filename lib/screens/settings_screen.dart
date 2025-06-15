@@ -29,6 +29,14 @@ class SettingsScreen extends StatelessWidget {
                 subtitle: Text('Sube un archivo PDF con tu horario de clases'),
                 onTap: () => _procesarPDF(context),
               ),
+Divider(height: 1),
+ListTile(
+  leading: const Icon(Icons.warning_amber_outlined),
+  title: const Text('Establecer límite de faltas'),
+  subtitle: const Text('Define el máximo permitido por materia'),
+  onTap: () => _mostrarDialogoLimiteFaltas(context),
+),
+
               Divider(height: 1),
               ListTile(
                 leading: Icon(Icons.remove_circle_outline),
@@ -163,6 +171,64 @@ class SettingsScreen extends StatelessWidget {
       },
     );
   }
+
+ void _mostrarDialogoLimiteFaltas(BuildContext context) async {
+  final int valorGuardado = await ClaseStorageService.obtenerLimiteFaltas();
+  if (!context.mounted) return;
+  showDialog(
+    context: context,
+    builder: (context) {
+      int valorSeleccionado = valorGuardado;
+
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Límite de faltas por materia'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Límite actual: $valorSeleccionado'),
+                Slider(
+                  value: valorSeleccionado.toDouble(),
+                  min: 1,
+                  max: 3,
+                  divisions: 2,
+                  label: '$valorSeleccionado',
+                  onChanged: (double newValue) {
+                    setState(() {
+                      valorSeleccionado = newValue.toInt();
+                    });
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                child: const Text('Guardar'),
+                onPressed: () async {
+                  await ClaseStorageService.establecerLimiteFaltas(valorSeleccionado);
+
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Límite guardado: $valorSeleccionado faltas')),
+                    );
+                  }
+                },
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+
 
   void _confirmarReset(BuildContext context) {
     showDialog(
