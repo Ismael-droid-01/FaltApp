@@ -30,9 +30,14 @@ class SettingsScreen extends StatelessWidget {
                 onTap: () async {
                   final File? pdf = await PDFService.pickPDF();
                   if (pdf != null && context.mounted) {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => PDFViewerScreen(file: pdf)));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PDFViewerScreen(file: pdf),
+                      ),
+                    );
                   }
-                }
+                },
               ),
               Divider(height: 1),
               ListTile(

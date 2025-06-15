@@ -40,6 +40,7 @@ dependencies:
   provider: ^6.1.2
   file_picker: ^10.2.0
   flutter_pdfview: ^1.0.7
+  syncfusion_flutter_pdf: ^24.2.3
 
 dev_dependencies:
   flutter_test:
