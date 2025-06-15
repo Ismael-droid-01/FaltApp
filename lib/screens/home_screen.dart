@@ -40,9 +40,17 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
-  void _mostrarFormularioAgregarFalta() {
+  void _mostrarFormularioAgregarFalta() async {
     final claseProvider = context.read<ClaseProvider>();
     final clases = claseProvider.clases;
+
+    // Obtenemos el límite de faltas
+    final limiteFaltas = await ClaseStorageService.obtenerLimiteFaltas();
+
+    if (!mounted) return;
+    // Filtrar clases que aún no han alcanzado el límite
+    final clasesDisponibles =
+        clases.where((clase) => clase.faltas.length < limiteFaltas).toList();
 
     String? materiaSeleccionada;
     DateTime? fechaSeleccionada;
@@ -65,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen>
                     decoration: const InputDecoration(labelText: 'Materia'),
                     isExpanded: true,
                     items:
-                        clases
+                        clasesDisponibles
                             .map(
                               (clase) => DropdownMenuItem(
                                 value: clase.materia,
