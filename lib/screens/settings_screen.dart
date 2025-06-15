@@ -54,13 +54,9 @@ class SettingsScreen extends StatelessWidget {
     if (pdf != null && context.mounted) {
       final String texto = await PDFService.extractTextFromPDF(pdf);
       final List<Clase> clases = PDFService.extractClasesFromText(texto);
-      for (var clase in clases) {
-        print("-------------------------");
-        print(clase.materia);
-        print(clase.horario);
-        print("-------------------------");
-      }
       await ClaseStorageService.agregarMultiplesClases(clases);
+
+      if (!context.mounted) return;
       context.read<ClaseProvider>().cargarClases();
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -89,7 +85,13 @@ class SettingsScreen extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () async {
+                  // Eliminar faltas
                   await FaltaStorageService.limpiarFaltas();
+                  await ClaseStorageService.limpiarClases();
+
+                  if (!context.mounted) return;
+                  context.read<FaltaProvider>().cargarFaltas();
+                  context.read<ClaseProvider>().cargarClases();
 
                   if (context.mounted) {
                     context

@@ -23,7 +23,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => FaltaProvider()..cargarFaltas()),
-        ChangeNotifierProvider(create: (_) => ClaseProvider()),
+        ChangeNotifierProvider(create: (_) => ClaseProvider()..cargarClases()),
       ],
       child: const FaltApp(),
     ),

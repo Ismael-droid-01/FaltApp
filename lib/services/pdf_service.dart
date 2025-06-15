@@ -52,7 +52,6 @@ class PDFService {
     final regexHorario = RegExp(r'\b\d{1,2}:\d{2}-\d{1,2}:\d{2}\b');
     final regexUbicacion = RegExp(r'[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?\s\d+$');
 
-
     String horario = '';
     List<Clase> clases = [];
 
