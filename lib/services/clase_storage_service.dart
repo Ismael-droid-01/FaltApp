@@ -12,6 +12,16 @@ class ClaseStorageService {
     return _box.values.toList();
   }
 
+  static int obtenerFaltas(String materia) {
+    // Buscar la clase con la materia dada
+    final clase = _box.values.firstWhere(
+      (c) => c.materia == materia, // devuelve null si no existe
+    );
+
+    // Retorna la cantidad de faltas de esa clase
+    return clase.faltas.length;
+  }
+
   static Future<void> eliminarClase(int index) async {
     await _box.deleteAt(index);
   }

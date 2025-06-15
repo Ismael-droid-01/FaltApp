@@ -2,11 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 import '../providers/clase_provider.dart';
 import '../services/clase_storage_service.dart';
-
 import '../utils/clase_utils.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -26,18 +24,15 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
 
-    // Se carga el controller de la animacion
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     );
 
-    // Se carga la lista de faltas al iniciar la pantalla
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ClaseProvider>().cargarClases();
     });
 
-    // Si la animacion termina y el boton sigue presionado, se registra la falta
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed && _isPressed) {
         _registrarFalta();
@@ -87,7 +82,6 @@ class _HomeScreenState extends State<HomeScreen>
                       materiaSeleccionada = value;
                     },
                   ),
-
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.calendar_today),
@@ -183,12 +177,12 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _onLongPressStart() {
     _isPressed = true;
-    _controller.forward(); // Inicia animacion
+    _controller.forward();
   }
 
   void _onLongPressEnd() {
     if (_controller.status != AnimationStatus.completed) {
-      _controller.reset(); // Cancela si no completo
+      _controller.reset();
     }
     _isPressed = false;
   }
@@ -214,7 +208,6 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       ),
-
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -227,7 +220,6 @@ class _HomeScreenState extends State<HomeScreen>
                   return const Text('No hay clases registradas');
                 }
 
-                // Crear una card por materia
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: GridView.count(
@@ -257,7 +249,6 @@ class _HomeScreenState extends State<HomeScreen>
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-
                                   const SizedBox(height: 6),
                                   ...clase.faltas.map(
                                     (fecha) => Text(
@@ -274,7 +265,6 @@ class _HomeScreenState extends State<HomeScreen>
                 );
               },
             ),
-
             const SizedBox(height: 20),
             Consumer<ClaseProvider>(
               builder: (context, claseProvider, _) {
@@ -292,20 +282,34 @@ class _HomeScreenState extends State<HomeScreen>
                 );
               },
             ),
-
             const SizedBox(height: 20),
+            FutureBuilder<int>(
+              future: ClaseStorageService.obtenerLimiteFaltas(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const CircularProgressIndicator();
+                }
 
-            Consumer<ClaseProvider>(
-              builder: (context, claseProvider, _) {
+                final limiteFaltas = snapshot.data!;
+                final claseProvider = context.read<ClaseProvider>();
                 final materiaActual = ClaseUtils.obtenerMateriaActual(
                   claseProvider.clases,
                 );
                 final hayClase = materiaActual.isNotEmpty;
 
+                final faltasActuales =
+                    hayClase
+                        ? ClaseStorageService.obtenerFaltas(materiaActual)
+                        : 0;
+
+                final limiteAlcanzado = faltasActuales >= limiteFaltas;
+                final estaDisponible = hayClase && !limiteAlcanzado;
+
                 return GestureDetector(
                   onLongPressStart:
-                      hayClase ? (_) => _onLongPressStart() : null,
-                  onLongPressEnd: hayClase ? (_) => _onLongPressEnd() : null,
+                      estaDisponible ? (_) => _onLongPressStart() : null,
+                  onLongPressEnd:
+                      estaDisponible ? (_) => _onLongPressEnd() : null,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -322,13 +326,15 @@ class _HomeScreenState extends State<HomeScreen>
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color:
-                              hayClase
-                                  ? Colors.redAccent
-                                  : Colors.grey, // cambia color
+                              estaDisponible ? Colors.redAccent : Colors.grey,
                         ),
                         child: Center(
                           child: Text(
-                            hayClase ? 'Registrar\nFalta' : 'Fuera\nde horario',
+                            hayClase
+                                ? (limiteAlcanzado
+                                    ? 'Límite\nalcanzado'
+                                    : 'Registrar\nFalta')
+                                : 'Fuera\nde horario',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
@@ -365,7 +371,6 @@ class ProgressCirclePainter extends CustomPainter {
 
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
-
     final sweepAngle = 2 * pi * animation.value;
 
     canvas.drawArc(
