@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'models/falta.dart';
 import 'providers/falta_provider.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,8 +29,12 @@ class FaltApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'FaltApp',
-      home: HomeScreen(),
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorSchemeSeed: Colors.redAccent,
+        useMaterial3: true,
+      ),
+      home: const MainScreen(),
     );
   }
 }
