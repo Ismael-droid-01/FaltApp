@@ -68,12 +68,18 @@ class _HomeScreenState extends State<HomeScreen>
                 children: [
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Materia'),
+                    isExpanded: true,
                     items:
                         clases
                             .map(
                               (clase) => DropdownMenuItem(
                                 value: clase.materia,
-                                child: Text(clase.materia),
+                                child: Text(
+                                  clase.materia,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                ),
                               ),
                             )
                             .toList(),
@@ -81,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen>
                       materiaSeleccionada = value;
                     },
                   ),
+
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.calendar_today),
