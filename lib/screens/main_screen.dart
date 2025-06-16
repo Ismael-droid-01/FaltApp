@@ -45,6 +45,8 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+        showSelectedLabels: false, // Oculta el label del ítem seleccionado
+        showUnselectedLabels: false, // Oculta los demás labels
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Faltas'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Ajustes'),

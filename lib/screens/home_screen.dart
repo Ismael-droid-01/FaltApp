@@ -255,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 1.09,
+                  childAspectRatio: 1.1,
                   children:
                       clases.map((clase) {
                         return Card(
@@ -309,23 +309,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                         );
                       }).toList(),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            Consumer<ClaseProvider>(
-              builder: (context, claseProvider, _) {
-                final materiaActual = ClaseUtils.obtenerMateriaActual(
-                  claseProvider.clases,
-                );
-                return Text(
-                  materiaActual.isNotEmpty
-                      ? materiaActual
-                      : 'No hay clase en este momento',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
                 );
               },
             ),
@@ -407,6 +390,43 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     );
                   },
+                );
+              },
+            ),
+            //const SizedBox(height: 20),
+            Consumer<ClaseProvider>(
+              builder: (context, claseProvider, _) {
+                final materiaActual = ClaseUtils.obtenerMateriaActual(
+                  claseProvider.clases,
+                );
+
+                final bool hayClase = materiaActual.isNotEmpty;
+
+                return Align(
+                  alignment: Alignment.center,
+                  child: Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    color: hayClase ? Colors.white : Colors.grey.shade300,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      child: Text(
+                        hayClase
+                            ? materiaActual
+                            : 'No hay clase en este momento',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: hayClase ? Colors.black : Colors.grey.shade600,
+                        ),
+                      ),
+                    ),
+                  ),
                 );
               },
             ),
