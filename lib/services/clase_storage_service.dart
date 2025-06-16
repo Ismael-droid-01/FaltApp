@@ -77,6 +77,6 @@ class ClaseStorageService {
 
   static Future<int> obtenerLimiteFaltas() async {
     final box = await Hive.openBox('ajustes');
-    return box.get('limiteFaltas', defaultValue: 1);
+    return box.get('limiteFaltas', defaultValue: 3);
   }
 }

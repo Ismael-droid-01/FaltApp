@@ -8,6 +8,7 @@ import '../providers/clase_provider.dart';
 import '../services/clase_storage_service.dart';
 import '../utils/clase_utils.dart';
 import 'package:intl/intl.dart';
+import '../widgets/icono_circular.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -238,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen>
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
-                    childAspectRatio: 3 / 2,
+                    childAspectRatio: 1.09,
                     children:
                         clases.map((clase) {
                           return Card(
@@ -248,18 +249,26 @@ class _HomeScreenState extends State<HomeScreen>
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Flexible(
-                                    child: Text(
-                                      clase.materia,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const IconoCircular(),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        clase.materia,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.start,
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 6),
+
+                                  const SizedBox(height: 8),
                                   if (clase.faltas.isNotEmpty) ...[
                                     Text(
                                       DateFormat(

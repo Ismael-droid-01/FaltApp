@@ -12,6 +12,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   //await Hive.deleteBoxFromDisk('clases');
+  //await Hive.deleteBoxFromDisk('ajustes');
 
   Hive.registerAdapter(ClaseAdapter());
 
