@@ -40,10 +40,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
 
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
-      CurvedAnimation(
-        parent: _scaleController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -90,19 +87,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Materia'),
                     isExpanded: true,
-                    items: clasesDisponibles
-                        .map(
-                          (clase) => DropdownMenuItem(
-                            value: clase.materia,
-                            child: Text(
-                              clase.materia,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              softWrap: false,
-                            ),
-                          ),
-                        )
-                        .toList(),
+                    items:
+                        clasesDisponibles
+                            .map(
+                              (clase) => DropdownMenuItem(
+                                value: clase.materia,
+                                child: Text(
+                                  clase.materia,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                ),
+                              ),
+                            )
+                            .toList(),
                     onChanged: (value) {
                       materiaSeleccionada = value;
                     },
@@ -232,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         actions: [
           IconButton(
             padding: const EdgeInsets.only(right: 22.0),
-            icon: const Icon(Icons.add_circle_outline_rounded, size: 32,),
+            icon: const Icon(Icons.add_circle_outline_rounded, size: 32),
             tooltip: 'Agregar falta manualmente',
             onPressed: _mostrarFormularioAgregarFalta,
           ),
@@ -258,55 +256,59 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                   childAspectRatio: 1.09,
-                  children: clases.map((clase) {
-                    return Card(
-                      elevation: 4,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
+                  children:
+                      clases.map((clase) {
+                        return Card(
+                          elevation: 4,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const IconoCircular(),
-                                const SizedBox(height: 8),
-                                Text(
-                                  clase.materia,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.start,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const IconoCircular(
+                                      icono: Icons.school,
+                                      colorFondo: Colors.redAccent,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      clase.materia,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ],
                                 ),
+                                const SizedBox(height: 8),
+                                if (clase.faltas.isNotEmpty) ...[
+                                  Text(
+                                    DateFormat(
+                                      "d 'de' MMMM",
+                                      'es',
+                                    ).format(clase.faltas.last),
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  FaltasProgressBar(
+                                    faltasActuales: clase.faltas.length,
+                                  ),
+                                ] else ...[
+                                  const Text(
+                                    'Sin faltas',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                ],
                               ],
                             ),
-                            const SizedBox(height: 8),
-                            if (clase.faltas.isNotEmpty) ...[
-                              Text(
-                                DateFormat(
-                                  "d 'de' MMMM",
-                                  'es',
-                                ).format(clase.faltas.last),
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                              const SizedBox(height: 8),
-                              FaltasProgressBar(
-                                faltasActuales: clase.faltas.length,
-                              ),
-                            ] else ...[
-                              const Text(
-                                'Sin faltas',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                          ),
+                        );
+                      }).toList(),
                 );
               },
             ),
@@ -344,7 +346,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     final hayClase = materiaActual.isNotEmpty;
 
                     final faltasActuales =
-                        hayClase ? ClaseStorageService.obtenerFaltas(materiaActual) : 0;
+                        hayClase
+                            ? ClaseStorageService.obtenerFaltas(materiaActual)
+                            : 0;
 
                     final limiteAlcanzado = faltasActuales >= limiteFaltas;
                     final estaDisponible = hayClase && !limiteAlcanzado;
@@ -377,7 +381,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               height: 120,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: estaDisponible ? Colors.redAccent : Colors.grey,
+                                color:
+                                    estaDisponible
+                                        ? Colors.redAccent
+                                        : Colors.grey,
                               ),
                               child: Center(
                                 child: Text(
@@ -417,10 +424,11 @@ class ProgressCirclePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = Colors.redAccent
-      ..strokeWidth = 6
-      ..style = PaintingStyle.stroke;
+    final Paint paint =
+        Paint()
+          ..color = Colors.redAccent
+          ..strokeWidth = 6
+          ..style = PaintingStyle.stroke;
 
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;

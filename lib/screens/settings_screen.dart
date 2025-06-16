@@ -5,6 +5,7 @@ import '../models/clase.dart';
 import '../services/clase_storage_service.dart';
 import '../providers/clase_provider.dart';
 import 'dart:io';
+import '../widgets/icono_circular.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -24,36 +25,42 @@ class SettingsScreen extends StatelessWidget {
             shrinkWrap: true,
             children: [
               ListTile(
-                leading: Icon(Icons.upload_file),
+                leading: const IconoCircular(
+                  icono: Icons.upload_file,
+                  colorFondo: Colors.blueAccent,
+                ),
                 title: Text('Cargar archivo de horario'),
                 subtitle: Text('Sube un archivo PDF con tu horario de clases'),
                 onTap: () => _procesarPDF(context),
               ),
-              Divider(height: 1),
               ListTile(
-                leading: const Icon(Icons.warning_amber_outlined),
-                title: const Text('Establecer límite de faltas'),
-                subtitle: const Text('Define el máximo permitido por materia'),
+                leading: const IconoCircular(
+                  icono: Icons.warning_amber_outlined,
+                  colorFondo: Colors.orangeAccent,
+                ),
+                title: Text('Establecer límite de faltas'),
+                subtitle: Text('Define el máximo permitido por materia'),
                 onTap: () => _mostrarDialogoLimiteFaltas(context),
               ),
-
-              Divider(height: 1),
               ListTile(
-                leading: Icon(Icons.remove_circle_outline),
+                leading: const IconoCircular(
+                  icono: Icons.remove_circle_outline,
+                  colorFondo: Colors.purpleAccent,
+                ),
                 title: Text('Eliminar solo faltas'),
                 subtitle: Text('Selecciona materias y borra sus faltas'),
                 onTap: () => _mostrarSeleccionMaterias(context),
               ),
-              Divider(height: 1),
               ListTile(
-                leading: Icon(Icons.delete_forever),
+                leading: const IconoCircular(
+                  icono: Icons.delete_forever,
+                  colorFondo: Colors.redAccent,
+                ),
                 title: Text('Restablecer datos'),
                 subtitle: Text(
                   'Elimina todas las materias y faltas registradas',
                 ),
-                onTap: () {
-                  _confirmarReset(context);
-                },
+                onTap: () => _confirmarReset(context),
               ),
             ],
           ),
