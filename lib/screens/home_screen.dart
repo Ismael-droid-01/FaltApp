@@ -231,7 +231,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            padding: const EdgeInsets.only(right: 22.0),
+            icon: const Icon(Icons.add_circle_outline_rounded, size: 32,),
             tooltip: 'Agregar falta manualmente',
             onPressed: _mostrarFormularioAgregarFalta,
           ),
@@ -294,7 +295,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               const SizedBox(height: 8),
                               FaltasProgressBar(
                                 faltasActuales: clase.faltas.length,
-                                limiteFaltas: 3,
                               ),
                             ] else ...[
                               const Text(
