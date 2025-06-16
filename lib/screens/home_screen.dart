@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:faltapp/widgets/faltas_progess_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/clase_provider.dart';
 import '../services/clase_storage_service.dart';
 import '../utils/clase_utils.dart';
 import 'package:intl/intl.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -268,13 +268,10 @@ class _HomeScreenState extends State<HomeScreen>
                                       ).format(clase.faltas.last),
                                       style: const TextStyle(fontSize: 14),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '${clase.faltas.length} falta${clase.faltas.length == 1 ? '' : 's'}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                    const SizedBox(height: 8),
+                                    FaltasProgressBar(
+                                      faltasActuales: clase.faltas.length,
+                                      limiteFaltas: 3,
                                     ),
                                   ] else ...[
                                     const Text(
