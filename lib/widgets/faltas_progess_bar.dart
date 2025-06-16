@@ -5,10 +5,10 @@ class FaltasProgressBar extends StatelessWidget {
   final int limiteFaltas;
 
   const FaltasProgressBar({
-    Key? key,
+    super.key,
     required this.faltasActuales,
     required this.limiteFaltas,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
