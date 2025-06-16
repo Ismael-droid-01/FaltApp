@@ -17,9 +17,11 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
+  late AnimationController _scaleController;
+  late Animation<double> _scaleAnimation;
+
   bool _isPressed = false;
   Timer? _timer;
 
@@ -32,8 +34,22 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this,
     );
 
+    _scaleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
+      CurvedAnimation(
+        parent: _scaleController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ClaseProvider>().cargarClases();
+      if (mounted) {
+        context.read<ClaseProvider>().cargarClases();
+      }
     });
 
     _controller.addStatusListener((status) {
@@ -47,11 +63,10 @@ class _HomeScreenState extends State<HomeScreen>
     final claseProvider = context.read<ClaseProvider>();
     final clases = claseProvider.clases;
 
-    // Obtenemos el límite de faltas
     final limiteFaltas = await ClaseStorageService.obtenerLimiteFaltas();
 
     if (!mounted) return;
-    // Filtrar clases que aún no han alcanzado el límite
+
     final clasesDisponibles =
         clases.where((clase) => clase.faltas.length < limiteFaltas).toList();
 
@@ -75,20 +90,19 @@ class _HomeScreenState extends State<HomeScreen>
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Materia'),
                     isExpanded: true,
-                    items:
-                        clasesDisponibles
-                            .map(
-                              (clase) => DropdownMenuItem(
-                                value: clase.materia,
-                                child: Text(
-                                  clase.materia,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  softWrap: false,
-                                ),
-                              ),
-                            )
-                            .toList(),
+                    items: clasesDisponibles
+                        .map(
+                          (clase) => DropdownMenuItem(
+                            value: clase.materia,
+                            child: Text(
+                              clase.materia,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              softWrap: false,
+                            ),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (value) {
                       materiaSeleccionada = value;
                     },
@@ -184,11 +198,13 @@ class _HomeScreenState extends State<HomeScreen>
 
     _controller.reset();
     _isPressed = false;
+    _scaleController.reverse();
   }
 
   void _onLongPressStart() {
     _isPressed = true;
     _controller.forward();
+    _scaleController.forward();
   }
 
   void _onLongPressEnd() {
@@ -196,11 +212,13 @@ class _HomeScreenState extends State<HomeScreen>
       _controller.reset();
     }
     _isPressed = false;
+    _scaleController.reverse();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _scaleController.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -219,7 +237,8 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       ),
-      body: Center(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -231,69 +250,63 @@ class _HomeScreenState extends State<HomeScreen>
                   return const Text('No hay clases registradas');
                 }
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.09,
-                    children:
-                        clases.map((clase) {
-                          return Card(
-                            elevation: 4,
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const IconoCircular(),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        clase.materia,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.start,
-                                      ),
-                                    ],
+                return GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 1.09,
+                  children: clases.map((clase) {
+                    return Card(
+                      elevation: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const IconoCircular(),
+                                const SizedBox(height: 8),
+                                Text(
+                                  clase.materia,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                   ),
-
-                                  const SizedBox(height: 8),
-                                  if (clase.faltas.isNotEmpty) ...[
-                                    Text(
-                                      DateFormat(
-                                        "d 'de' MMMM",
-                                        'es',
-                                      ).format(clase.faltas.last),
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    FaltasProgressBar(
-                                      faltasActuales: clase.faltas.length,
-                                      limiteFaltas: 3,
-                                    ),
-                                  ] else ...[
-                                    const Text(
-                                      'Sin faltas',
-                                      style: TextStyle(fontSize: 14),
-                                    ),
-                                  ],
-                                ],
-                              ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.start,
+                                ),
+                              ],
                             ),
-                          );
-                        }).toList(),
-                  ),
+                            const SizedBox(height: 8),
+                            if (clase.faltas.isNotEmpty) ...[
+                              Text(
+                                DateFormat(
+                                  "d 'de' MMMM",
+                                  'es',
+                                ).format(clase.faltas.last),
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              const SizedBox(height: 8),
+                              FaltasProgressBar(
+                                faltasActuales: clase.faltas.length,
+                                limiteFaltas: 3,
+                              ),
+                            ] else ...[
+                              const Text(
+                                'Sin faltas',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 );
               },
             ),
@@ -323,61 +336,70 @@ class _HomeScreenState extends State<HomeScreen>
                 }
 
                 final limiteFaltas = snapshot.data!;
-                final claseProvider = context.read<ClaseProvider>();
-                final materiaActual = ClaseUtils.obtenerMateriaActual(
-                  claseProvider.clases,
-                );
-                final hayClase = materiaActual.isNotEmpty;
+                return Consumer<ClaseProvider>(
+                  builder: (context, claseProvider, _) {
+                    final materiaActual = ClaseUtils.obtenerMateriaActual(
+                      claseProvider.clases,
+                    );
+                    final hayClase = materiaActual.isNotEmpty;
 
-                final faltasActuales =
-                    hayClase
-                        ? ClaseStorageService.obtenerFaltas(materiaActual)
-                        : 0;
+                    final faltasActuales =
+                        hayClase ? ClaseStorageService.obtenerFaltas(materiaActual) : 0;
 
-                final limiteAlcanzado = faltasActuales >= limiteFaltas;
-                final estaDisponible = hayClase && !limiteAlcanzado;
+                    final limiteAlcanzado = faltasActuales >= limiteFaltas;
+                    final estaDisponible = hayClase && !limiteAlcanzado;
 
-                return GestureDetector(
-                  onLongPressStart:
-                      estaDisponible ? (_) => _onLongPressStart() : null,
-                  onLongPressEnd:
-                      estaDisponible ? (_) => _onLongPressEnd() : null,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      SizedBox(
-                        width: 140,
-                        height: 140,
-                        child: CustomPaint(
-                          painter: ProgressCirclePainter(_controller),
-                        ),
-                      ),
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color:
-                              estaDisponible ? Colors.redAccent : Colors.grey,
-                        ),
-                        child: Center(
-                          child: Text(
-                            hayClase
-                                ? (limiteAlcanzado
-                                    ? 'Límite\nalcanzado'
-                                    : 'Registrar\nFalta')
-                                : 'Fuera\nde horario',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                    return GestureDetector(
+                      onLongPressStart:
+                          estaDisponible ? (_) => _onLongPressStart() : null,
+                      onLongPressEnd:
+                          estaDisponible ? (_) => _onLongPressEnd() : null,
+                      child: AnimatedBuilder(
+                        animation: _scaleAnimation,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: _scaleAnimation.value,
+                            child: child,
+                          );
+                        },
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 140,
+                              height: 140,
+                              child: CustomPaint(
+                                painter: ProgressCirclePainter(_controller),
+                              ),
                             ),
-                          ),
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: estaDisponible ? Colors.redAccent : Colors.grey,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  hayClase
+                                      ? (limiteAlcanzado
+                                          ? 'Límite\nalcanzado'
+                                          : 'Registrar\nFalta')
+                                      : 'Fuera\nde horario',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 );
               },
             ),
@@ -395,11 +417,10 @@ class ProgressCirclePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint =
-        Paint()
-          ..color = Colors.redAccent
-          ..strokeWidth = 6
-          ..style = PaintingStyle.stroke;
+    final Paint paint = Paint()
+      ..color = Colors.redAccent
+      ..strokeWidth = 6
+      ..style = PaintingStyle.stroke;
 
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
