@@ -221,6 +221,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  final List<Color> coloresIconos = [
+    Colors.redAccent, // Principal
+    Colors.orangeAccent, // Cálido, análogo al rojo
+    Colors.blueAccent, // Contraste fresco, elegante
+    Colors.pinkAccent, // Luminoso pero equilibrado
+    Colors.deepPurpleAccent, // Profundo y contrastante
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -257,21 +265,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       spacing: 12,
                       runSpacing: 12,
                       children:
-                          clases.map((clase) {
+                          clases.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final clase = entry.value;
+
+                            final colorIcono =
+                                coloresIconos[index % coloresIconos.length];
+
                             return SizedBox(
                               width:
                                   (MediaQuery.of(context).size.width - 52) / 2,
                               child: Card(
                                 elevation: 4,
+                                //color: Colors.white, // o sin `color:` para el fondo predeterminado
                                 child: Padding(
                                   padding: const EdgeInsets.all(12),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const IconoCircular(
+                                      IconoCircular(
                                         icono: Icons.school,
-                                        colorFondo: Colors.redAccent,
+                                        colorFondo: colorIcono,
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
@@ -295,6 +310,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         const SizedBox(height: 8),
                                         FaltasProgressBar(
                                           faltasActuales: clase.faltas.length,
+                                          color: colorIcono,
                                         ),
                                       ] else ...[
                                         const Text(
@@ -424,6 +440,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                     child: Text(
                       hayClase ? materiaActual : 'No hay clase en este momento',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

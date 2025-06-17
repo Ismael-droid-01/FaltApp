@@ -3,8 +3,13 @@ import '../services/clase_storage_service.dart';
 
 class FaltasProgressBar extends StatelessWidget {
   final int faltasActuales;
+  final Color color; // Nuevo parámetro para el color
 
-  const FaltasProgressBar({super.key, required this.faltasActuales});
+  const FaltasProgressBar({
+    super.key,
+    required this.faltasActuales,
+    required this.color, // Requerido
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,17 +39,13 @@ class FaltasProgressBar extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       height: 10,
                       decoration: BoxDecoration(
-                        color:
-                            index < currentStep
-                                ? Colors.redAccent
-                                : Colors.grey[300],
+                        color: index < currentStep ? color : Colors.grey[300],
                         borderRadius: BorderRadius.circular(5),
                       ),
                     ),
                   );
                 }),
               ),
-              // Flecha eliminada
             ],
           ),
         );
