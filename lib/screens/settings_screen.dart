@@ -74,6 +74,8 @@ class SettingsScreen extends StatelessWidget {
     if (pdf != null && context.mounted) {
       final String texto = await PDFService.extractTextFromPDF(pdf);
       final List<Clase> clases = PDFService.extractClasesFromText(texto);
+      // Al importar un nuevo horario restablece los datos
+      await ClaseStorageService.limpiarClases();
       await ClaseStorageService.agregarMultiplesClases(clases);
 
       if (!context.mounted) return;
