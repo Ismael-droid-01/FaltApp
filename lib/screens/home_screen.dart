@@ -249,67 +249,59 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   return const Text('No hay clases registradas');
                 }
 
-                return GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.1,
-                  children:
-                      clases.map((clase) {
-                        return Card(
-                          elevation: 4,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const IconoCircular(
-                                      icono: Icons.school,
-                                      colorFondo: Colors.redAccent,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      clase.materia,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.start,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                if (clase.faltas.isNotEmpty) ...[
-                                  Text(
-                                    DateFormat(
-                                      "d 'de' MMMM",
-                                      'es',
-                                    ).format(clase.faltas.last),
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  FaltasProgressBar(
-                                    faltasActuales: clase.faltas.length,
-                                  ),
-                                ] else ...[
-                                  const Text(
-                                    'Sin faltas',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                );
+                return Wrap(
+  spacing: 12,
+  runSpacing: 12,
+  children: clases.map((clase) {
+    return SizedBox(
+      width: (MediaQuery.of(context).size.width - 52) / 2, // 16 padding * 2 + 12 spacing
+      child: Card(
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const IconoCircular(
+                icono: Icons.school,
+                colorFondo: Colors.redAccent,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                clase.materia,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.start,
+              ),
+              const SizedBox(height: 8),
+              if (clase.faltas.isNotEmpty) ...[
+                Text(
+                  DateFormat("d 'de' MMMM", 'es')
+                      .format(clase.faltas.last),
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                FaltasProgressBar(
+                  faltasActuales: clase.faltas.length,
+                ),
+              ] else ...[
+                const Text(
+                  'Sin faltas',
+                  style: TextStyle(fontSize: 14),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }).toList(),
+);
+
               },
             ),
             const SizedBox(height: 10),

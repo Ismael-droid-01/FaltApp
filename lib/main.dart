@@ -12,8 +12,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   // Solo para desarrolladores
-  await Hive.deleteBoxFromDisk('clases');
-  await Hive.deleteBoxFromDisk('ajustes');
+  //await Hive.deleteBoxFromDisk('clases');
+  //await Hive.deleteBoxFromDisk('ajustes');
 
   Hive.registerAdapter(ClaseAdapter());
 
