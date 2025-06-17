@@ -45,11 +45,20 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        showSelectedLabels: false, // Oculta el label del ítem seleccionado
-        showUnselectedLabels: false, // Oculta los demás labels
+        //showSelectedLabels: false, // Oculta el label del ítem seleccionado
+        //showUnselectedLabels: false, // Oculta los demás labels
+        selectedFontSize: 13,
+        unselectedFontSize: 13,
+        iconSize: 30,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Faltas'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Ajustes'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.check_circle),
+            label: 'Faltas',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.build_circle),
+            label: 'Ajustes',
+          ),
         ],
       ),
     );

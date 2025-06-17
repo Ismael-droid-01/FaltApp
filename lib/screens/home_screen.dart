@@ -312,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 );
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             FutureBuilder<int>(
               future: ClaseStorageService.obtenerLimiteFaltas(),
               builder: (context, snapshot) {
@@ -370,19 +370,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         : Colors.grey,
                               ),
                               child: Center(
-                                child: Text(
-                                  hayClase
-                                      ? (limiteAlcanzado
-                                          ? 'Límite\nalcanzado'
-                                          : 'Registrar\nFalta')
-                                      : 'Fuera\nde horario',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                child:
+                                    hayClase
+                                        ? (limiteAlcanzado
+                                            ? const Icon(
+                                              Icons.sentiment_neutral_sharp,
+                                              color: Colors.white,
+                                              size: 50,
+                                            ) // ícono límite alcanzado
+                                            : const Icon(
+                                              Icons.thumb_down_alt_rounded,
+                                              color: Colors.white,
+                                              size: 50,
+                                            ) // ícono registrar falta (zzz)
+                                            )
+                                        : const Icon(
+                                          Icons.hourglass_disabled_rounded,
+                                          color: Colors.white,
+                                          size: 50,
+                                        ), // ícono fuera de horario
                               ),
                             ),
                           ],
