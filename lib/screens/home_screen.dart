@@ -236,81 +236,91 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Consumer<ClaseProvider>(
-              builder: (context, claseProvider, _) {
-                final clases = claseProvider.clases;
+            /// 🔽 Sección scrollable con las tarjetas
+            Expanded(
+              child: SingleChildScrollView(
+                child: Consumer<ClaseProvider>(
+                  builder: (context, claseProvider, _) {
+                    final clases = claseProvider.clases;
 
-                if (clases.isEmpty) {
-                  return const Text('No hay clases registradas');
-                }
+                    if (clases.isEmpty) {
+                      return const Center(
+                        child: Text('No hay clases registradas'),
+                      );
+                    }
 
-                return Wrap(
-  spacing: 12,
-  runSpacing: 12,
-  children: clases.map((clase) {
-    return SizedBox(
-      width: (MediaQuery.of(context).size.width - 52) / 2, // 16 padding * 2 + 12 spacing
-      child: Card(
-        elevation: 4,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const IconoCircular(
-                icono: Icons.school,
-                colorFondo: Colors.redAccent,
+                    return Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children:
+                          clases.map((clase) {
+                            return SizedBox(
+                              width:
+                                  (MediaQuery.of(context).size.width - 52) / 2,
+                              child: Card(
+                                elevation: 4,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const IconoCircular(
+                                        icono: Icons.school,
+                                        colorFondo: Colors.redAccent,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        clase.materia,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      if (clase.faltas.isNotEmpty) ...[
+                                        Text(
+                                          DateFormat(
+                                            "d 'de' MMMM",
+                                            'es',
+                                          ).format(clase.faltas.last),
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        FaltasProgressBar(
+                                          faltasActuales: clase.faltas.length,
+                                        ),
+                                      ] else ...[
+                                        const Text(
+                                          'Sin faltas',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                    );
+                  },
+                ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                clase.materia,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.start,
-              ),
-              const SizedBox(height: 8),
-              if (clase.faltas.isNotEmpty) ...[
-                Text(
-                  DateFormat("d 'de' MMMM", 'es')
-                      .format(clase.faltas.last),
-                  style: const TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 8),
-                FaltasProgressBar(
-                  faltasActuales: clase.faltas.length,
-                ),
-              ] else ...[
-                const Text(
-                  'Sin faltas',
-                  style: TextStyle(fontSize: 14),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }).toList(),
-);
-
-              },
             ),
-            const SizedBox(height: 10),
+
+            const SizedBox(height: 16),
+
+            /// 🔽 Botón siempre visible
             FutureBuilder<int>(
               future: ClaseStorageService.obtenerLimiteFaltas(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const CircularProgressIndicator();
-                }
+                if (!snapshot.hasData) return const CircularProgressIndicator();
 
                 final limiteFaltas = snapshot.data!;
                 return Consumer<ClaseProvider>(
@@ -319,7 +329,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       claseProvider.clases,
                     );
                     final hayClase = materiaActual.isNotEmpty;
-
                     final faltasActuales =
                         hayClase
                             ? ClaseStorageService.obtenerFaltas(materiaActual)
@@ -369,18 +378,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               Icons.sentiment_neutral_sharp,
                                               color: Colors.white,
                                               size: 50,
-                                            ) // ícono límite alcanzado
+                                            )
                                             : const Icon(
                                               Icons.thumb_down_alt_rounded,
                                               color: Colors.white,
                                               size: 50,
-                                            ) // ícono registrar falta (zzz)
-                                            )
+                                            ))
                                         : const Icon(
                                           Icons.hourglass_disabled_rounded,
                                           color: Colors.white,
                                           size: 50,
-                                        ), // ícono fuera de horario
+                                        ),
                               ),
                             ),
                           ],
@@ -391,37 +399,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 );
               },
             ),
-            //const SizedBox(height: 20),
+
+            const SizedBox(height: 12),
+
+            /// 🔽 Etiqueta materia actual siempre visible
             Consumer<ClaseProvider>(
               builder: (context, claseProvider, _) {
                 final materiaActual = ClaseUtils.obtenerMateriaActual(
                   claseProvider.clases,
                 );
 
-                final bool hayClase = materiaActual.isNotEmpty;
+                final hayClase = materiaActual.isNotEmpty;
 
-                return Align(
-                  alignment: Alignment.center,
-                  child: Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                return Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  color: hayClase ? Colors.white : Colors.grey.shade300,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
                     ),
-                    color: hayClase ? Colors.white : Colors.grey.shade300,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      child: Text(
-                        hayClase
-                            ? materiaActual
-                            : 'No hay clase en este momento',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: hayClase ? Colors.black : Colors.grey.shade600,
-                        ),
+                    child: Text(
+                      hayClase ? materiaActual : 'No hay clase en este momento',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: hayClase ? Colors.black : Colors.grey.shade600,
                       ),
                     ),
                   ),
