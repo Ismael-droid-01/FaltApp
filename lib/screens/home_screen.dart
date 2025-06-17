@@ -358,8 +358,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             /// 🔽 Botón central solo si hay clases
             Consumer<ClaseProvider>(
               builder: (context, claseProvider, _) {
-                if (claseProvider.clases.isEmpty)
+                if (claseProvider.clases.isEmpty) {
                   return const SizedBox.shrink();
+                }
 
                 final materiaActual = ClaseUtils.obtenerMateriaActual(
                   claseProvider.clases,
@@ -369,8 +370,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 return FutureBuilder<int>(
                   future: ClaseStorageService.obtenerLimiteFaltas(),
                   builder: (context, snapshot) {
-                    if (!snapshot.hasData)
-                      return const CircularProgressIndicator();
+                    if (!snapshot.hasData){return const CircularProgressIndicator();}
+                      
 
                     final limiteFaltas = snapshot.data!;
                     final faltasActuales =
@@ -448,8 +449,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             /// 🔽 Etiqueta solo si hay clases
             Consumer<ClaseProvider>(
               builder: (context, claseProvider, _) {
-                if (claseProvider.clases.isEmpty)
+                if (claseProvider.clases.isEmpty) {
                   return const SizedBox.shrink();
+                }
 
                 final materiaActual = ClaseUtils.obtenerMateriaActual(
                   claseProvider.clases,
