@@ -229,208 +229,262 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     Colors.deepPurpleAccent, // Profundo y contrastante
   ];
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text('Faltas'),
-      centerTitle: true,
-      actions: [
-        Consumer<ClaseProvider>(
-          builder: (context, claseProvider, _) {
-            return claseProvider.clases.isNotEmpty
-                ? IconButton(
+  @override
+  Widget build(BuildContext context) {
+    final double cardWidth = (MediaQuery.of(context).size.width - 52) / 2;
+    final double cardHeight = 180;
+
+    // Contenedor fijo para 2x2 cards
+    final double containerWidth =
+        cardWidth * 2 + 12; // 2 cards + espacio entre columnas
+    final double containerHeight =
+        cardHeight * 2 + 12; // 2 cards + espacio entre filas
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Faltas'),
+        centerTitle: true,
+        actions: [
+          Consumer<ClaseProvider>(
+            builder: (context, claseProvider, _) {
+              return claseProvider.clases.isNotEmpty
+                  ? IconButton(
                     padding: const EdgeInsets.only(right: 22.0),
-                    icon: const Icon(Icons.add_circle_outline_rounded, size: 32),
+                    icon: const Icon(
+                      Icons.add_circle_outline_rounded,
+                      size: 32,
+                    ),
                     tooltip: 'Agregar falta manualmente',
                     onPressed: _mostrarFormularioAgregarFalta,
                   )
-                : const SizedBox.shrink();
-          },
-        ),
-      ],
-    ),
-    body: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          /// 🔽 Sección scrollable con las tarjetas
-          Expanded(
-            child: SingleChildScrollView(
-              child: Consumer<ClaseProvider>(
-                builder: (context, claseProvider, _) {
-                  final clases = claseProvider.clases;
-
-                  if (clases.isEmpty) {
-                    return const Center(
-                      child: Text('No hay clases registradas'),
-                    );
-                  }
-
-                  return Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: clases.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final clase = entry.value;
-                      final colorIcono = coloresIconos[index % coloresIconos.length];
-
-                      return SizedBox(
-                        width: (MediaQuery.of(context).size.width - 52) / 2,
-                        height: 180,
-                        child: Card(
-                          elevation: 4,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                IconoCircular(
-                                  icono: Icons.school,
-                                  colorFondo: colorIcono,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  clase.materia,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 8),
-                                if (clase.faltas.isNotEmpty) ...[
-                                  Text(
-                                    DateFormat("d 'de' MMMM", 'es').format(clase.faltas.last),
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  FaltasProgressBar(
-                                    faltasActuales: clase.faltas.length,
-                                    color: colorIcono,
-                                  ),
-                                ] else ...[
-                                  const Text(
-                                    'Sin faltas',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          /// 🔽 Botón central solo si hay clases
-          Consumer<ClaseProvider>(
-            builder: (context, claseProvider, _) {
-              if (claseProvider.clases.isEmpty) return const SizedBox.shrink();
-
-              final materiaActual = ClaseUtils.obtenerMateriaActual(claseProvider.clases);
-              final hayClase = materiaActual.isNotEmpty;
-
-              return FutureBuilder<int>(
-                future: ClaseStorageService.obtenerLimiteFaltas(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) return const CircularProgressIndicator();
-
-                  final limiteFaltas = snapshot.data!;
-                  final faltasActuales = hayClase
-                      ? ClaseStorageService.obtenerFaltas(materiaActual)
-                      : 0;
-                  final limiteAlcanzado = faltasActuales >= limiteFaltas;
-                  final estaDisponible = hayClase && !limiteAlcanzado;
-
-                  return GestureDetector(
-                    onLongPressStart: estaDisponible ? (_) => _onLongPressStart() : null,
-                    onLongPressEnd: estaDisponible ? (_) => _onLongPressEnd() : null,
-                    child: AnimatedBuilder(
-                      animation: _scaleAnimation,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: _scaleAnimation.value,
-                          child: child,
-                        );
-                      },
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          SizedBox(
-                            width: 140,
-                            height: 140,
-                            child: CustomPaint(
-                              painter: ProgressCirclePainter(_controller),
-                            ),
-                          ),
-                          Container(
-                            width: 120,
-                            height: 120,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: estaDisponible ? Colors.redAccent : Colors.grey,
-                            ),
-                            child: Center(
-                              child: hayClase
-                                  ? (limiteAlcanzado
-                                      ? const Icon(Icons.sentiment_neutral_sharp, color: Colors.white, size: 50)
-                                      : const Icon(Icons.thumb_down_alt_rounded, color: Colors.white, size: 50))
-                                  : const Icon(Icons.hourglass_disabled_rounded, color: Colors.white, size: 50),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-
-          const SizedBox(height: 12),
-
-          /// 🔽 Etiqueta solo si hay clases
-          Consumer<ClaseProvider>(
-            builder: (context, claseProvider, _) {
-              if (claseProvider.clases.isEmpty) return const SizedBox.shrink();
-
-              final materiaActual = ClaseUtils.obtenerMateriaActual(claseProvider.clases);
-              final hayClase = materiaActual.isNotEmpty;
-
-              return Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                color: hayClase ? Colors.white : Colors.grey.shade300,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Text(
-                    hayClase ? materiaActual : 'No hay clase en este momento',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: hayClase ? Colors.black : Colors.grey.shade600,
-                    ),
-                  ),
-                ),
-              );
+                  : const SizedBox.shrink();
             },
           ),
         ],
       ),
-    ),
-  );
-}
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            /// 🔽 Sección scrollable con las tarjetas
+            // Calcula el ancho y alto de cada card
+            SizedBox(
+              width: containerWidth,
+              height: containerHeight,
+              child: ScrollConfiguration(
+                behavior: const ScrollBehavior().copyWith(overscroll: false),
+                child: SingleChildScrollView(
+                  child: Consumer<ClaseProvider>(
+                    builder: (context, claseProvider, _) {
+                      final clases = claseProvider.clases;
+
+                      if (clases.isEmpty) {
+                        return const Center(
+                          child: Text('No hay clases registradas'),
+                        );
+                      }
+
+                      return Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children:
+                            clases.map((clase) {
+                              final index = claseProvider.clases.indexOf(clase);
+                              final colorIcono =
+                                  coloresIconos[index % coloresIconos.length];
+
+                              return SizedBox(
+                                width: cardWidth,
+                                height: cardHeight,
+                                child: Card(
+                                  elevation: 4,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        IconoCircular(
+                                          icono: Icons.school,
+                                          colorFondo: colorIcono,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          clase.materia,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        if (clase.faltas.isNotEmpty) ...[
+                                          Text(
+                                            DateFormat(
+                                              "d 'de' MMMM",
+                                              'es',
+                                            ).format(clase.faltas.last),
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          FaltasProgressBar(
+                                            faltasActuales: clase.faltas.length,
+                                            color: colorIcono,
+                                          ),
+                                        ] else ...[
+                                          const Text(
+                                            'Sin faltas',
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            /// 🔽 Botón central solo si hay clases
+            Consumer<ClaseProvider>(
+              builder: (context, claseProvider, _) {
+                if (claseProvider.clases.isEmpty)
+                  return const SizedBox.shrink();
+
+                final materiaActual = ClaseUtils.obtenerMateriaActual(
+                  claseProvider.clases,
+                );
+                final hayClase = materiaActual.isNotEmpty;
+
+                return FutureBuilder<int>(
+                  future: ClaseStorageService.obtenerLimiteFaltas(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData)
+                      return const CircularProgressIndicator();
+
+                    final limiteFaltas = snapshot.data!;
+                    final faltasActuales =
+                        hayClase
+                            ? ClaseStorageService.obtenerFaltas(materiaActual)
+                            : 0;
+                    final limiteAlcanzado = faltasActuales >= limiteFaltas;
+                    final estaDisponible = hayClase && !limiteAlcanzado;
+
+                    return GestureDetector(
+                      onLongPressStart:
+                          estaDisponible ? (_) => _onLongPressStart() : null,
+                      onLongPressEnd:
+                          estaDisponible ? (_) => _onLongPressEnd() : null,
+                      child: AnimatedBuilder(
+                        animation: _scaleAnimation,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: _scaleAnimation.value,
+                            child: child,
+                          );
+                        },
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 140,
+                              height: 140,
+                              child: CustomPaint(
+                                painter: ProgressCirclePainter(_controller),
+                              ),
+                            ),
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color:
+                                    estaDisponible
+                                        ? Colors.redAccent
+                                        : Colors.grey,
+                              ),
+                              child: Center(
+                                child:
+                                    hayClase
+                                        ? (limiteAlcanzado
+                                            ? const Icon(
+                                              Icons.sentiment_neutral_sharp,
+                                              color: Colors.white,
+                                              size: 50,
+                                            )
+                                            : const Icon(
+                                              Icons.thumb_down_alt_rounded,
+                                              color: Colors.white,
+                                              size: 50,
+                                            ))
+                                        : const Icon(
+                                          Icons.hourglass_disabled_rounded,
+                                          color: Colors.white,
+                                          size: 50,
+                                        ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+
+            const SizedBox(height: 12),
+
+            /// 🔽 Etiqueta solo si hay clases
+            Consumer<ClaseProvider>(
+              builder: (context, claseProvider, _) {
+                if (claseProvider.clases.isEmpty)
+                  return const SizedBox.shrink();
+
+                final materiaActual = ClaseUtils.obtenerMateriaActual(
+                  claseProvider.clases,
+                );
+                final hayClase = materiaActual.isNotEmpty;
+
+                return Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  color: hayClase ? Colors.white : Colors.grey.shade300,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    child: Text(
+                      hayClase ? materiaActual : 'No hay clase en este momento',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: hayClase ? Colors.black : Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class ProgressCirclePainter extends CustomPainter {
