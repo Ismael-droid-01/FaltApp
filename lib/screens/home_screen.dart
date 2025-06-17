@@ -273,8 +273,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 coloresIconos[index % coloresIconos.length];
 
                             return SizedBox(
-                              width:
-                                  (MediaQuery.of(context).size.width - 52) / 2,
+                                width: (MediaQuery.of(context).size.width - 52) / 2,
+  height: 180, // 🔽 Altura fija
                               child: Card(
                                 elevation: 4,
                                 //color: Colors.white, // o sin `color:` para el fondo predeterminado
