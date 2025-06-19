@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:faltapp/widgets/faltas_progess_bar.dart';
+import '../widgets/faltas_progess_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/clase_provider.dart';
@@ -370,8 +370,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 return FutureBuilder<int>(
                   future: ClaseStorageService.obtenerLimiteFaltas(),
                   builder: (context, snapshot) {
-                    if (!snapshot.hasData){return const CircularProgressIndicator();}
-                      
+                    if (!snapshot.hasData) {
+                      return const CircularProgressIndicator();
+                    }
 
                     final limiteFaltas = snapshot.data!;
                     final faltasActuales =

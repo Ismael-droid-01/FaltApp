@@ -34,6 +34,7 @@ class PDFService {
       }
 
       document.dispose();
+      //print(buffer.toString().trim());
       return buffer.toString().trim();
     } catch (e) {
       //print("Error al extraer texto: $e");

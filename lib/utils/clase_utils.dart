@@ -3,10 +3,12 @@ import '../models/clase.dart';
 
 class ClaseUtils {
   static String obtenerMateriaActual(List<Clase> clases) {
-    //final ahora = TimeOfDay.now();
-    final ahora = TimeOfDay(hour: 10, minute: 05);
-    //final diaSemana = DateTime.now().weekday;
-    final diaSemana = 1;
+    final ahora = TimeOfDay.now();
+    //final ahora = TimeOfDay(hour: 10, minute: 05);
+    final diaSemana = DateTime.now().weekday;
+    //final diaSemana = 1;
+    print(ahora);
+    print(diaSemana);
 
     if (diaSemana >= 6) {
       // 6 = sábado, 7 = domingo
@@ -14,7 +16,7 @@ class ClaseUtils {
     }
 
     for (final clase in clases) {
-      print("Clase: ${clase.horario}");
+      //print("Clase: ${clase.horario}");
       final partes = clase.horario.split('-');
       if (partes.length != 2) continue;
 
